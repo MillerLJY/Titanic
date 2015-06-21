@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 #load the train data
 train_df = pd.read_csv('../data/train.csv',header = 0);
 
-#trans sex to Gender
+#transform sex to Gender
 train_df['Gender'] = train_df['Sex'].map({'female':0,'male':1}).astype(int);
 
 if(len(train_df.Embarked.isnull()) > 0 ):
@@ -17,7 +17,7 @@ Ports_dict = { name:i for i,name in Ports}
 train_df.Embarked = train_df.Embarked.map(lambda x: Ports_dict[x]).astype(int);
 
 
-# trans Fare
+# transform Fare
 step_fare = 10;
 max_fare = 39;
 train_df['Fare_level'] = 0;
@@ -37,11 +37,11 @@ for i in range(0,2):
 		train_df.loc[(train_df['Age'].isnull()) & (train_df['Gender'] == i) & (train_df['Pclass'] == j+1) , 'Age'] = median_age[i,j];
 		
 
-train_df = train_df.drop(['Name','Sex','Ticket','Cabin','PassengerId'] , axis=1)
+train_df = train_df.drop(['Name','Sex','Ticket','Cabin','PassengerId','Fare'] , axis=1)
 
 
 test_df = pd.read_csv('../data/test.csv',header = 0);
-#trans sex to Gender
+#transform sex to Gender
 test_df['Gender'] = test_df['Sex'].map({'female':0,'male':1}).astype(int);
 test_df.Embarked = test_df.Embarked.map(lambda x: Ports_dict[x]).astype(int);
 
@@ -58,7 +58,7 @@ for i in range(0,2):
 		test_df.loc[ (test_df['Fare'].isnull()) & (test_df['Gender'] == i) & (test_df['Pclass']== j+1) , 'Fare' ] = median_fare[i,j];
 
 
-#trans fare in test
+#transform fare in test
 test_df['Fare_level'] = 0;
 test_df.Fare[test_df['Fare'] > max_fare] = max_fare;
 
@@ -77,7 +77,7 @@ for i in range(0,2):
                 test_df.loc[(test_df['Gender'] == i) & (test_df['Pclass'] == j+1) , 'Age'] = median_age[i,j];
 
 ids = test_df['PassengerId'].values
-test_df = test_df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'PassengerId'], axis=1)
+test_df = test_df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'PassengerId','Fare'], axis=1)
 
 
 # the data is now ready to go , So lets fit to the train, then predict to the test!

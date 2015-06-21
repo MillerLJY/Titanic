@@ -19,10 +19,10 @@ train_df.Embarked = train_df.Embarked.map(lambda x: Ports_dict[x]).astype(int);
 
 # transform Fare
 step_fare = 10;
-max_fare = 39;
+max_fare = 59;
 train_df['Fare_level'] = 0;
 train_df.Fare[train_df['Fare'] > max_fare] = max_fare; 
-for i in range(0,5):
+for i in range(0,7):
 	train_df.Fare_level[(train_df['Fare'] >= i*step_fare) & (train_df['Fare'] < (i+1)*step_fare)] = i;
 
 
@@ -37,7 +37,14 @@ for i in range(0,2):
 		train_df.loc[(train_df['Age'].isnull()) & (train_df['Gender'] == i) & (train_df['Pclass'] == j+1) , 'Age'] = median_age[i,j];
 		
 
-train_df = train_df.drop(['Name','Sex','Ticket','Cabin','PassengerId','Fare'] , axis=1)
+step_age = 10;
+max_age = 59;
+train_df['Age_level'] = 0;
+train_df.Age[train_df['Age_level'] > max_age] = max_age;
+for i in range(0,7):
+        train_df.Age_level[(train_df['Age'] >= i*step_age) & (train_df['Age'] < (i+1)*step_age)] = i;
+
+train_df = train_df.drop(['Name','Sex','Ticket','Cabin','PassengerId','Fare','Age'] , axis=1)
 
 
 test_df = pd.read_csv('../data/test.csv',header = 0);
@@ -76,8 +83,14 @@ for i in range(0,2):
         for j in range(0,3):
                 test_df.loc[(test_df['Gender'] == i) & (test_df['Pclass'] == j+1) , 'Age'] = median_age[i,j];
 
+
+test_df['Age_level'] = 0;
+test_df.Age[test_df['Age_level'] > max_age] = max_age;
+for i in range(0,7):
+        test_df.Age_level[(test_df['Age'] >= i*step_age) & (test_df['Age'] < (i+1)*step_age)] = i;
+
 ids = test_df['PassengerId'].values
-test_df = test_df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'PassengerId','Fare'], axis=1)
+test_df = test_df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'PassengerId','Fare','Age'], axis=1)
 
 
 # the data is now ready to go , So lets fit to the train, then predict to the test!

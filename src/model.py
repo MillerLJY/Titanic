@@ -54,6 +54,14 @@ for i in range(0,2):
         for j in range(0,3):
                 train_df.gender_pclass[(train_df['Gender'] == i) & (train_df['Pclass'] == j+1)] = (j+1) + 3*i;
 
+
+#extract a new feature : marry
+train_df['marry_title'] = 0;
+train_df.marry_title[ train_df.Name.str.contains('Mr') ] = 0;
+train_df.marry_title[ train_df.Name.str.contains('Miss') ] = 1;
+train_df.marry_title[ train_df.Name.str.contains('Mrs') ] = 2;
+
+
 train_df = train_df.drop(['Name','Sex','Ticket','Cabin','PassengerId','Fare','Age'] , axis=1)
 
 train_df.to_csv('output.csv');
@@ -107,6 +115,15 @@ test_df['gender_pclass'] = 0;
 for i in range(0,2):
         for j in range(0,3):
                 test_df.gender_pclass[(test_df['Gender'] == i) & (test_df['Pclass'] == j+1)] = (j+1) + 3*i;
+
+
+
+#extract a new feature : marry
+test_df['marry_title'] = 0;
+test_df.marry_title[ test_df.Name.str.contains('Mr') ] = 0;
+test_df.marry_title[ test_df.Name.str.contains('Miss') ] = 1;
+test_df.marry_title[ test_df.Name.str.contains('Mrs') ] = 2;
+
 
 ids = test_df['PassengerId'].values
 test_df = test_df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'PassengerId','Fare','Age'], axis=1)

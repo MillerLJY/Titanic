@@ -10,7 +10,7 @@ train_df = pd.read_csv('../data/train.csv',header = 0);
 train_df['Gender'] = train_df['Sex'].map({'female':0,'male':1}).astype(int);
 
 if(len(train_df.Embarked.isnull()) > 0 ):
-	train_df.Embarked[train_df['Embarked'].isnull()] = train_df.Embarked.dropna().mode().values 
+	train_df.loc[train_df['Embarked'].isnull(), 'Embarked'] = train_df.Embarked.dropna().mode().values 
 
 Ports = list(enumerate(np.unique(train_df['Embarked'])))
 Ports_dict = { name:i for i,name in Ports}
@@ -37,6 +37,8 @@ for i in range(0,2):
 		train_df.loc[(train_df['Age'].isnull()) & (train_df['Gender'] == i) & (train_df['Pclass'] == j+1) , 'Age'] = median_age[i,j];
 		
 
+
+#transform age to age_level
 step_age = 10;
 max_age = 59;
 train_df['Age_level'] = 0;
@@ -44,8 +46,17 @@ train_df.Age[train_df['Age_level'] > max_age] = max_age;
 for i in range(0,7):
         train_df.Age_level[(train_df['Age'] >= i*step_age) & (train_df['Age'] < (i+1)*step_age)] = i;
 
+
+
+#extract a new feature : gender_pclass
+train_df['gender_pclass'] = 0;
+for i in range(0,2):
+        for j in range(0,3):
+                train_df.gender_pclass[(train_df['Gender'] == i) & (train_df['Pclass'] == j+1)] = (j+1) + 3*i;
+
 train_df = train_df.drop(['Name','Sex','Ticket','Cabin','PassengerId','Fare','Age'] , axis=1)
 
+train_df.to_csv('output.csv');
 
 test_df = pd.read_csv('../data/test.csv',header = 0);
 #transform sex to Gender
@@ -88,6 +99,14 @@ test_df['Age_level'] = 0;
 test_df.Age[test_df['Age_level'] > max_age] = max_age;
 for i in range(0,7):
         test_df.Age_level[(test_df['Age'] >= i*step_age) & (test_df['Age'] < (i+1)*step_age)] = i;
+
+
+
+#extract a new feature : gender_pclass
+test_df['gender_pclass'] = 0;
+for i in range(0,2):
+        for j in range(0,3):
+                test_df.gender_pclass[(test_df['Gender'] == i) & (test_df['Pclass'] == j+1)] = (j+1) + 3*i;
 
 ids = test_df['PassengerId'].values
 test_df = test_df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'PassengerId','Fare','Age'], axis=1)
